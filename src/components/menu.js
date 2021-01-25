@@ -44,10 +44,6 @@
       useProperty,
     } = B;
     const isDev = env === 'dev';
-    const hasLink = linkTo && linkTo.id !== '';
-    const hasExternalLink = linkToExternal && linkToExternal.id !== '';
-    const linkToExternalVariable =
-      (linkToExternal && useText(linkToExternal)) || '';
     const isIcon = variant === 'icon';
     const buttonContent = useText(buttonText);
     const [isVisible, setIsVisible] = useState(visible);
@@ -66,12 +62,6 @@
       disabled,
       size,
       tabindex: isDev && -1,
-      href:
-        linkType === 'external' && hasExternalLink
-          ? linkToExternalVariable
-          : undefined,
-      component: linkType === 'internal' && hasLink ? B.Link : undefined,
-      endpoint: linkType === 'internal' && hasLink ? linkTo : undefined,
     };
 
     const iconButtonProps = {
@@ -95,7 +85,7 @@
     const ButtonComp = isIcon ? IconButton : Button;
 
     const handleToggle = () => {
-      if (!isDev) return;
+      if (isDev) return;
       setIsOpen(prevOpen => !prevOpen);
     };
 
@@ -146,7 +136,6 @@
             role={undefined}
             transition
             disablePortal
-            container={buttonRef?.current?.parentElement}
           >
             {({ TransitionProps, placement }) => (
               <Grow
@@ -158,22 +147,14 @@
               >
                 <Paper>
                   <ClickAwayListener onClickAway={handleClose}>
-                    <Menu
-                      anchorEl={buttonRef}
-                      keepMounted
-                      open={dev || isOpen}
-                      onClose={handleClose}
-                    >
-                      <MenuItem onClick={handleClose}>Profile</MenuItem>
-                      <MenuItem onClick={handleClose}>My account</MenuItem>
-                      <MenuItem onClick={handleClose}>Logout</MenuItem>
-                    </Menu>
+                    {console.log(children)}
+                    {children}
                   </ClickAwayListener>
                 </Paper>
               </Grow>
             )}
           </Popper>
-          {/*<Menu
+          {/* <Menu
             anchorEl={buttonRef}
             keepMounted
             open={dev || isOpen}
@@ -182,7 +163,7 @@
             <MenuItem onClick={handleClose}>Profile</MenuItem>
             <MenuItem onClick={handleClose}>My account</MenuItem>
             <MenuItem onClick={handleClose}>Logout</MenuItem>
-          </Menu>*/}
+          </Menu> */}
         </>
       );
     };
