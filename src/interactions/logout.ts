@@ -3,7 +3,7 @@ interface Page {
   url: string;
 }
 
-function Logout({
+function logout({
   event,
   redirectTo,
 }: {
