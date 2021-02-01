@@ -2,6 +2,7 @@ package main
 
 import (
 	// "github.com/JoWiel/component-set-generator/database"
+	"github.com/JoWiel/component-set-generator/generator"
 	"github.com/JoWiel/component-set-generator/router"
 
 	"log"
@@ -14,6 +15,8 @@ import (
 )
 
 func main() {
+	go generator.SetGenerator()
+
 	app := fiber.New()
 	//Sets headers to improve security
 	app.Use(helmet.New())
