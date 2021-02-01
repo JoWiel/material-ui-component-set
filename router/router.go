@@ -1,8 +1,10 @@
 package router
 
 import (
-	"os"
 	"fmt"
+	"os"
+
+	"github.com/JoWiel/component-set-generator/generator"
 
 	"github.com/beevik/guid"
 	"github.com/gofiber/fiber/v2"
@@ -32,25 +34,32 @@ func SetupRoutes(app *fiber.App) {
 		// => []*multipart.FileHeader
 		newGUID := guid.New()
 		directory := "public/uploaded/" + newGUID.String()
-		
+
 		if _, err := os.Stat(directory); os.IsNotExist(err) {
 			os.Mkdir(directory, 0700)
 		}
 
+		srcDirectory := directory + "/src"
+
+		if _, err := os.Stat(srcDirectory); os.IsNotExist(err) {
+			os.Mkdir(srcDirectory, 0700)
+		}
+
+		// generator.StaticGenerator(directory)
 		// Loop through files:
 		for _, file := range components {
 			fmt.Println(file.Filename, file.Size, file.Header["Content-Type"][0])
 			// => "tutorial.pdf" 360641 "application/pdf"
 
 			// create directory
-			pathPrefix := directory + "/components"
-			
+			pathPrefix := srcDirectory + "/components"
+
 			if _, err := os.Stat(pathPrefix); os.IsNotExist(err) {
 				os.Mkdir(pathPrefix, 0700)
 			}
-			
+
 			path := pathPrefix + "/" + file.Filename
-			
+
 			// Save the files to disk:
 			err := c.SaveFile(file, fmt.Sprintf("./%s", path))
 
@@ -65,13 +74,13 @@ func SetupRoutes(app *fiber.App) {
 			// => "tutorial.pdf" 360641 "application/pdf"
 
 			// create directory
-			pathPrefix := directory + "/interactions"
-			
+			pathPrefix := srcDirectory + "/interactions"
+
 			if _, err := os.Stat(pathPrefix); os.IsNotExist(err) {
 				os.Mkdir(pathPrefix, 0700)
 			}
-			
-			path := pathPrefix + "/" + file.Filename			
+
+			path := pathPrefix + "/" + file.Filename
 			// Save the files to disk:
 			err := c.SaveFile(file, fmt.Sprintf("./%s", path))
 
@@ -86,12 +95,12 @@ func SetupRoutes(app *fiber.App) {
 			// => "tutorial.pdf" 360641 "application/pdf"
 
 			// create directory
-			pathPrefix := directory + "/prefabs"
-			
+			pathPrefix := srcDirectory + "/prefabs"
+
 			if _, err := os.Stat(pathPrefix); os.IsNotExist(err) {
 				os.Mkdir(pathPrefix, 0700)
 			}
-			
+
 			path := pathPrefix + "/" + file.Filename
 			// Save the files to disk:
 			err := c.SaveFile(file, fmt.Sprintf("./%s", path))
@@ -101,11 +110,12 @@ func SetupRoutes(app *fiber.App) {
 				return err
 			}
 		}
+		go generator.SetGenerator(directory)
 		return nil
 	})
 
 }
 
 func saveToComponentStore() {
-	
+
 }
