@@ -1,9 +1,6 @@
 package router
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/JoWiel/component-set-generator/generator"
 
 	"github.com/beevik/guid"
@@ -21,9 +18,6 @@ func SetupRoutes(app *fiber.App) {
 	api.Post("/upload", func(c *fiber.Ctx) error {
 		// Parse the multipart form:
 		form, err := c.MultipartForm()
-		if err != nil {
-			return err
-		}
 		// => *multipart.Form
 
 		// Get all files from "documents" key:
@@ -35,87 +29,30 @@ func SetupRoutes(app *fiber.App) {
 		newGUID := guid.New()
 		directory := "public/uploaded/" + newGUID.String()
 
-		if _, err := os.Stat(directory); os.IsNotExist(err) {
-			os.Mkdir(directory, 0700)
-		}
+		generator.SaveToComponentStore(directory)
 
 		srcDirectory := directory + "/src"
 
-		if _, err := os.Stat(srcDirectory); os.IsNotExist(err) {
-			os.Mkdir(srcDirectory, 0700)
+		generator.SaveToComponentStore(srcDirectory)
+
+		err = generator.SaveFiles(c, interactions, srcDirectory + "/interactions")
+		err = generator.SaveFiles(c, components, srcDirectory + "/components")
+		err = generator.SaveFiles(c, prefabs, srcDirectory + "/prefabs")
+		
+		if err != nil {
+			c.Status(500).JSON(&fiber.Map{
+				"succes":  false,
+				"message": err,
+			})
 		}
-
-		// generator.StaticGenerator(directory)
-		// Loop through files:
-		for _, file := range components {
-			fmt.Println(file.Filename, file.Size, file.Header["Content-Type"][0])
-			// => "tutorial.pdf" 360641 "application/pdf"
-
-			// create directory
-			pathPrefix := srcDirectory + "/components"
-
-			if _, err := os.Stat(pathPrefix); os.IsNotExist(err) {
-				os.Mkdir(pathPrefix, 0700)
-			}
-
-			path := pathPrefix + "/" + file.Filename
-
-			// Save the files to disk:
-			err := c.SaveFile(file, fmt.Sprintf("./%s", path))
-
-			// Check for errors
-			if err != nil {
-				return err
-			}
-		}
-
-		for _, file := range interactions {
-			fmt.Println(file.Filename, file.Size, file.Header["Content-Type"][0])
-			// => "tutorial.pdf" 360641 "application/pdf"
-
-			// create directory
-			pathPrefix := srcDirectory + "/interactions"
-
-			if _, err := os.Stat(pathPrefix); os.IsNotExist(err) {
-				os.Mkdir(pathPrefix, 0700)
-			}
-
-			path := pathPrefix + "/" + file.Filename
-			// Save the files to disk:
-			err := c.SaveFile(file, fmt.Sprintf("./%s", path))
-
-			// Check for errors
-			if err != nil {
-				return err
-			}
-		}
-
-		for _, file := range prefabs {
-			fmt.Println(file.Filename, file.Size, file.Header["Content-Type"][0])
-			// => "tutorial.pdf" 360641 "application/pdf"
-
-			// create directory
-			pathPrefix := srcDirectory + "/prefabs"
-
-			if _, err := os.Stat(pathPrefix); os.IsNotExist(err) {
-				os.Mkdir(pathPrefix, 0700)
-			}
-
-			path := pathPrefix + "/" + file.Filename
-			// Save the files to disk:
-			err := c.SaveFile(file, fmt.Sprintf("./%s", path))
-
-			// Check for errors
-			if err != nil {
-				return err
-			}
-		}
+		
 		go generator.SetGenerator(directory)
+		c.Status(200).JSON(&fiber.Map{
+			"succes":  true,
+			"url": "api/v1/sets/" + newGUID.String() + "/dist",
+		})
+		
 		return nil
 	})
-
-}
-
-func saveToComponentStore() {
 
 }

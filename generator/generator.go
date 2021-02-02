@@ -2,35 +2,20 @@ package generator
 
 import (
 	"fmt"
+	"mime/multipart"
 	"os"
 	"os/exec"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 // SetGenerator generates custom component sets from the selected sets
 func SetGenerator(path string) {
-	// store := "/componentStore/ls"
-	// cmd, err := exec.Run(store, []string{store, "-l"}, nil, "", exec.DevNull, exec.Pipe, exec.Pipe)
-
-	// if (err != nil) {
-	//    fmt.Fprintln(os.Stderr, err.String())
-	//    return
-	// }
-
-	// var b bytes.Buffer
-	// io.Copy(&b, cmd.Stdout)
-	// fmt.Println(b.String())
-
-	// cmd.Close()
-	// command := exec.Command("../app/node/npm","mkdir newset && cd newset && yarn && npx webpack --config webpack.config.js")
 	projectRoot, err := os.Getwd()
 	if err != nil {
 		fmt.Println(err)
 	}
     cmdLine := projectRoot + "/generator/generator.sh"
-	// nodeExecPath, err := exec.LookPath("node")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
 
 	// line := "cd " + projectRoot + " && pwd"
 	command := exec.Command("/bin/sh", cmdLine, path)
@@ -51,10 +36,6 @@ func StaticGenerator(path string) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	// nodeExecPath, err := exec.LookPath("node")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
 
 	cmdLine := projectRoot + "/generator/static.sh"
 
@@ -69,4 +50,31 @@ func StaticGenerator(path string) {
 	}
 
 	fmt.Println("command succesfully ran:")
+}
+
+// SaveToComponentStore makes directory if non exists
+func SaveToComponentStore(path string)  {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		os.Mkdir(path, 0700)
+	}
+}
+
+// SaveFiles saves all the files to the defined srcDirectory
+func SaveFiles(c *fiber.Ctx, files []*multipart.FileHeader, pathPrefix string) error {
+	for _, file := range files {
+		fmt.Println(file.Filename, file.Size, file.Header["Content-Type"][0])
+
+		// create directory
+		SaveToComponentStore(pathPrefix)
+
+		path := pathPrefix + "/" + file.Filename
+		// Save the files to disk:
+		err := c.SaveFile(file, fmt.Sprintf("./%s", path))
+
+		// Check for errors
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+	return nil
 }
