@@ -22,7 +22,10 @@ func SetupRoutes(app *fiber.App) {
 		// Parse the multipart form:
 		form, err := c.MultipartForm()
 		if err != nil {
-			return err
+			c.Status(500).JSON(&fiber.Map{
+				"succes":  false,
+				"message": err,
+			})
 		}
 		// => *multipart.Form
 
@@ -65,7 +68,10 @@ func SetupRoutes(app *fiber.App) {
 
 			// Check for errors
 			if err != nil {
-				return err
+				c.Status(500).JSON(&fiber.Map{
+					"succes":  false,
+					"message": err,
+				})
 			}
 		}
 
@@ -86,7 +92,10 @@ func SetupRoutes(app *fiber.App) {
 
 			// Check for errors
 			if err != nil {
-				return err
+				c.Status(500).JSON(&fiber.Map{
+					"succes":  false,
+					"message": err,
+				})
 			}
 		}
 
@@ -107,10 +116,19 @@ func SetupRoutes(app *fiber.App) {
 
 			// Check for errors
 			if err != nil {
-				return err
+				c.Status(500).JSON(&fiber.Map{
+					"succes":  false,
+					"message": err,
+				})
 			}
 		}
 		go generator.SetGenerator(directory)
+		
+		c.Status(200).JSON((&fiber.Map{
+			"succes":  true,
+			"url": "/api/vq/sets/uploaded/" + newGUID.String(),
+		}))
+		
 		return nil
 	})
 
