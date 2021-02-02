@@ -49,7 +49,7 @@ func SetupRoutes(app *fiber.App) {
 		go generator.SetGenerator(directory)
 		c.Status(200).JSON(&fiber.Map{
 			"succes":  true,
-			"url": "api/v1/sets/" + newGUID.String() + "/dist",
+			"url": "api/v1/sets/uploaded/" + newGUID.String() + "/dist",
 		})
 		
 		return nil
