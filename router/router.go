@@ -29,29 +29,29 @@ func SetupRoutes(app *fiber.App) {
 		newGUID := guid.New()
 		directory := "public/uploaded/" + newGUID.String()
 
-		generator.SaveToComponentStore(directory)
+		generator.CreateDiretoryIfNotExistint(directory)
 
 		srcDirectory := directory + "/src"
 
-		generator.SaveToComponentStore(srcDirectory)
+		generator.CreateDiretoryIfNotExistint(srcDirectory)
 
-		err = generator.SaveFiles(c, interactions, srcDirectory + "/interactions")
-		err = generator.SaveFiles(c, components, srcDirectory + "/components")
-		err = generator.SaveFiles(c, prefabs, srcDirectory + "/prefabs")
-		
+		err = generator.SaveFiles(c, interactions, srcDirectory+"/interactions")
+		err = generator.SaveFiles(c, components, srcDirectory+"/components")
+		err = generator.SaveFiles(c, prefabs, srcDirectory+"/prefabs")
+
 		if err != nil {
 			c.Status(500).JSON(&fiber.Map{
 				"succes":  false,
 				"message": err,
 			})
 		}
-		
+
 		go generator.SetGenerator(directory)
 		c.Status(200).JSON(&fiber.Map{
-			"succes":  true,
-			"url": "api/v1/sets/uploaded/" + newGUID.String() + "/dist",
+			"succes": true,
+			"url":    "api/v1/sets/uploaded/" + newGUID.String() + "/dist",
 		})
-		
+
 		return nil
 	})
 
