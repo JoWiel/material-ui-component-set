@@ -8,8 +8,6 @@ import (
 
 // UploadSets handles the upload of the component sets
 func UploadSets(c *fiber.Ctx) error {
-	
-		
 		// Parse the multipart form:
 		form, err := c.MultipartForm()
 		// => *multipart.Form
@@ -19,14 +17,14 @@ func UploadSets(c *fiber.Ctx) error {
 		interactions := form.File["interactions"]
 		prefabs := form.File["prefabs"]
 		
-		if len(components) != 0 {
+		if len(components) == 0 {
 			c.Status(422).JSON(&fiber.Map{
 				"succes":  false,
 				"message": "Component(s) must be provided",
 			})
 		}
 		
-		if len(prefabs) != 0 {
+		if len(prefabs) == 0 {
 			c.Status(422).JSON(&fiber.Map{
 				"succes":  false,
 				"message": "Prefab(s) must be provided",
