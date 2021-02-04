@@ -13,37 +13,21 @@ func UploadSets(c *fiber.Ctx) error {
 	// => *multipart.Form
 
 	if form == nil {
-		c.Status(422).JSON(&fiber.Map{
-			"succes":  false,
-			"message": "Component and prefabs(s) must be provided",
-		})
+		SendErrorMessage(c, 422, "Component(s) and prefabs(s) must be provided")
 		return nil
 	}
 	// Get all files from "documents" key:
 	components, componentExists := form.File["components"]
 	if !componentExists {
-		c.Status(422).JSON(&fiber.Map{
-			"succes":  false,
-			"message": "Component(s) must be provided",
-		})
+		SendErrorMessage(c, 422, "Component(s) must be provided")
 		return nil
 	}
 
 	interactions := form.File["interactions"]
 	prefabs, prefabsExists := form.File["prefabs"]
 	if !prefabsExists {
-		c.Status(422).JSON(&fiber.Map{
-			"succes":  false,
-			"message": "Prefabs(s) must be provided",
-		})
+		SendErrorMessage(c, 422, "Prefabs(s) must be provided")
 		return nil
-	}
-
-	if len(prefabs) == 0 {
-		c.Status(422).JSON(&fiber.Map{
-			"succes":  false,
-			"message": "Prefab(s) must be provided",
-		})
 	}
 
 	// => []*multipart.FileHeader
@@ -61,10 +45,7 @@ func UploadSets(c *fiber.Ctx) error {
 	err = generator.SaveFiles(c, prefabs, srcDirectory+"/prefabs")
 
 	if err != nil {
-		c.Status(500).JSON(&fiber.Map{
-			"succes":  false,
-			"message": err,
-		})
+		SendErrorMessage(c, 500, err)
 	}
 
 	go generator.SetGenerator(directory)
