@@ -17,10 +17,7 @@ func SetupRoutes(app *fiber.App) {
 	api.Post("/upload", func(c *fiber.Ctx) error {
 		err := middleware.UploadSets(c)
 		if err != nil {
-			c.Status(500).JSON(&fiber.Map{
-				"succes":  false,
-				"message": err,
-			})
+			middleware.SendErrorMessage(c, 500, err)
 		}
 		return nil
 	})
