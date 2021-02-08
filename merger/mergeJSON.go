@@ -53,7 +53,7 @@ func GetPackageJSONFiles(files []string) []PackageJSON {
 }
 
 // MergePackages into one the first reporistory given is the leading repository. All unique dependecies will be merged in to one
-func MergePackages(paths []string) error {
+func MergePackages(newFilePath string, paths []string) error {
 	JSONFiles := GetPackageJSONFiles(paths)
 	mergedResult := MergePackageJSONs(JSONFiles)
 
@@ -63,7 +63,7 @@ func MergePackages(paths []string) error {
 		return err
 	}
 
-	err = ioutil.WriteFile(`package.json`, outputJSON, os.ModePerm)
+	err = ioutil.WriteFile(newFilePath, outputJSON, os.ModePerm)
 
 	if err != nil {
 		return err

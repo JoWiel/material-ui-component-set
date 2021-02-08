@@ -8,12 +8,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// CreateDiretoryIfNotExistint makes directory if non exists
-func CreateDiretoryIfNotExistint(path string) {
+// CreateDiretoryIfNotExist makes directory if non exists
+func CreateDiretoryIfNotExist(path string) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		os.Mkdir(path, 0700)
 	}
 }
+
+//CreatePathIfNotExsts creates the whole path if it does not exists
 
 // SaveFiles saves all the files to the defined srcDirectory
 func SaveFiles(c *fiber.Ctx, files []*multipart.FileHeader, pathPrefix string) error {
@@ -21,11 +23,11 @@ func SaveFiles(c *fiber.Ctx, files []*multipart.FileHeader, pathPrefix string) e
 		fmt.Println(file.Filename, file.Size, file.Header["Content-Type"][0])
 
 		// create directory
-		CreateDiretoryIfNotExistint(pathPrefix)
+		CreateDiretoryIfNotExist(pathPrefix)
 
 		path := pathPrefix + "/" + file.Filename
 
-		CreateDiretoryIfNotExistint(path)
+		CreateDiretoryIfNotExist(path)
 		// Save the files to disk:
 		err := c.SaveFile(file, fmt.Sprintf("./%s", path))
 

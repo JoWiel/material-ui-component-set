@@ -34,11 +34,11 @@ func UploadSets(c *fiber.Ctx) error {
 	newGUID := guid.New()
 	directory := "public/uploaded/" + newGUID.String()
 
-	generator.CreateDiretoryIfNotExistint(directory)
+	generator.CreateDiretoryIfNotExist(directory)
 
 	srcDirectory := directory + "/src"
 
-	generator.CreateDiretoryIfNotExistint(srcDirectory)
+	generator.CreateDiretoryIfNotExist(srcDirectory)
 
 	err = generator.SaveFiles(c, interactions, srcDirectory+"/interactions")
 	err = generator.SaveFiles(c, components, srcDirectory+"/components")

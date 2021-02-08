@@ -21,4 +21,12 @@ func SetupRoutes(app *fiber.App) {
 		}
 		return nil
 	})
+
+	api.Post("/new-set", func(c *fiber.Ctx) error {
+		err := middleware.GenerateCombinedSet(c)
+		if err != nil {
+			middleware.SendErrorMessage(c, 500, err)
+		}
+		return nil
+	})
 }
