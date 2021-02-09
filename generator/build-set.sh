@@ -1,12 +1,10 @@
 #!/bin/bash 
 echo "Running.."
 
-echo $2
-echo $2
 cd $2
 pwd
 ls
-yarn && npx webpack --config webpack.config.js && bb components build
+npm install && npx webpack --config webpack.config.js && bb components build
 cd $1
 pwd
 cp -r $2/dist/. $3
