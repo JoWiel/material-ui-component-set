@@ -13,20 +13,22 @@ type RequestBody struct {
 	App          string   `json:"app"`
 }
 
-func getPaths(requestBody *RequestBody) ([]string, []string, []string) {
+func getPaths(requestBody *RequestBody) ([]string, []string, []string, []string) {
 	pathToRepositories := `./public/repositories/`
 	repositoryPathToIndexJS := `src/`
 	var webpackPaths []string
 	var packagePaths []string
 	var indexJSPaths []string
+	var srcPaths []string
 
 	for i := range requestBody.Sets {
 		prefix := pathToRepositories + requestBody.Sets[i] + `/`
 		webpackPaths = append(webpackPaths, (prefix + `webpack.config.js`))
 		packagePaths = append(packagePaths, (prefix + `package.json`))
 		indexJSPaths = append(indexJSPaths, (prefix + repositoryPathToIndexJS + `index.js`))
+		srcPaths = append(srcPaths, (prefix + `src`))
 	}
-	return webpackPaths, packagePaths, indexJSPaths
+	return webpackPaths, packagePaths, srcPaths, indexJSPaths
 }
 
 //GenerateCombinedSet generates a new component set based upon the requested sets
@@ -50,20 +52,28 @@ func GenerateCombinedSet(c *fiber.Ctx) error {
 	}
 
 	outputPrefix := `./public/generated/`
-	outputDirectory := outputPrefix + requestBody.Organisation + `/` + requestBody.App
-	outputURL := `api/v1/sets/uploaded/` + requestBody.Organisation + `/` + requestBody.App + `/dist`
-	webpackPaths, packagePaths, indexJSPaths := getPaths(requestBody)
+	orgAndAppPath := requestBody.Organisation + `/` + requestBody.App
+	outputDirectory := outputPrefix + orgAndAppPath
+	outputURL := `api/v1/sets/build/` + orgAndAppPath
+	buildDirectory := `./public/build/` + orgAndAppPath
+	webpackPaths, packagePaths, srcPaths, indexJSPaths := getPaths(requestBody)
 
 	generator.CreateDiretoryIfNotExist(outputPrefix + `/` + requestBody.Organisation)
-	generator.CreateDiretoryIfNotExist(outputPrefix + `/` + requestBody.Organisation + `/` + requestBody.App)
+	generator.CreateDiretoryIfNotExist(outputPrefix + `/` + orgAndAppPath)
+	merger.CopyDirectories(srcPaths, outputDirectory)
 	err := merger.MergePackages((outputDirectory + `/package.json`), packagePaths)
 	if err != nil {
 		return err
 	}
-	merger.MergeIndexJSFiles((outputDirectory + `/index.js`), indexJSPaths)
+	merger.MergeIndexJSFiles((outputDirectory + `/src/index.js`), indexJSPaths)
 	merger.MergeWebpackConfigJSs((outputDirectory + `/webpack.config.js`), webpackPaths)
 
-	go generator.SetGenerator(outputDirectory)
+	generator.CreateDiretoryIfNotExist(`./public/build/` + requestBody.Organisation)
+	generator.CreateDiretoryIfNotExist(buildDirectory)
+	err = generator.BuildSet(outputDirectory, buildDirectory)
+	if err != nil {
+		return err
+	}
 	c.Status(200).JSON(&fiber.Map{
 		"succes": true,
 		"url":    outputURL,
