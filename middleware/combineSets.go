@@ -54,12 +54,15 @@ func GenerateCombinedSet(c *fiber.Ctx) error {
 	outputPrefix := `./public/generated/`
 	orgAndAppPath := requestBody.Organisation + `/` + requestBody.App
 	outputDirectory := outputPrefix + orgAndAppPath
-	outputURL := `api/v1/sets/build/` + orgAndAppPath
+	outputURL := `api/v1/sets/merged/` + orgAndAppPath
 	buildDirectory := `./public/build/` + orgAndAppPath
 	webpackPaths, packagePaths, srcPaths, indexJSPaths := getPaths(requestBody)
 
 	generator.CreateDiretoryIfNotExist(outputPrefix + `/` + requestBody.Organisation)
 	generator.CreateDiretoryIfNotExist(outputPrefix + `/` + orgAndAppPath)
+	generator.CreateDiretoryIfNotExist(outputPrefix + `/` + orgAndAppPath + `/src`)
+
+	merger.CopyDirectory(srcPaths[0], outputPrefix+`/`+orgAndAppPath+`/src`)
 	merger.CopyDirectories(srcPaths, outputDirectory)
 	err := merger.MergePackages((outputDirectory + `/package.json`), packagePaths)
 	if err != nil {

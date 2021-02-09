@@ -36,7 +36,7 @@ func BuildSet(source, destination string) error {
 	cmdLine := projectRoot + "/generator/build-set.sh"
 
 	sourceCommand := source
-	command := exec.Command("/bin/sh", cmdLine, sourceCommand, destination)
+	command := exec.Command("/bin/sh", cmdLine, projectRoot, sourceCommand, destination)
 	command.Stdout = os.Stdout
 	command.Stderr = os.Stderr
 

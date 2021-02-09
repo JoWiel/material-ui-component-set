@@ -51,7 +51,7 @@ func UploadSets(c *fiber.Ctx) error {
 	go generator.SetGenerator(directory)
 	c.Status(200).JSON(&fiber.Map{
 		"succes": true,
-		"url":    "api/v1/sets/uploaded/" + newGUID.String() + "/dist",
+		"url":    "api/v1/new/uploaded/" + newGUID.String() + "/dist",
 	})
 
 	return nil
