@@ -1,3 +1,4 @@
+FROM node:alpine AS node_builder
 FROM golang:alpine AS builder
 
 RUN apk add --no-cache go
