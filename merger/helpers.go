@@ -1,6 +1,8 @@
 package merger
 
 import (
+	"github.com/mcuadros/go-version"
+
 	"fmt"
 	"os"
 )
@@ -58,7 +60,11 @@ func MergeMaps(maps ...map[string]interface{}) map[string]interface{} {
 	result := make(map[string]interface{})
 	for _, m := range maps {
 		for k, v := range m {
-			result[k] = v
+			current := result[k]
+			if current == nil || version.CompareSimple(fmt.Sprintf("%v", current), fmt.Sprintf("%v", v)) > 1 {
+				result[k] = v
+			}
+
 		}
 	}
 	return result

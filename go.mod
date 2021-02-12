@@ -8,4 +8,5 @@ require (
 	github.com/gofiber/helmet/v2 v2.1.0
 	github.com/jinzhu/gorm v1.9.16
 	github.com/joho/godotenv v1.3.0
+	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
 )

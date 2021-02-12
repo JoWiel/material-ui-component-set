@@ -77,9 +77,11 @@ func MergePackageJSONs(packageJSONs []PackageJSON) PackageJSON {
 	if len(packageJSONs) == 0 {
 		fmt.Println(`At least one package must be provided`)
 	}
-	for i := range packageJSONs {
-		dependecies := MergeMaps(merged.Dependencies, packageJSONs[i].Dependencies)
+	for _, item := range packageJSONs {
+		dependecies := MergeMaps(merged.Dependencies, item.Dependencies)
+		devDependecies := MergeMaps(merged.DevDependencies, item.DevDependencies)
 		merged.Dependencies = dependecies
+		merged.DevDependencies = devDependecies
 	}
 	return merged
 }
