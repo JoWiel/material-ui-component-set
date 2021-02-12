@@ -12,7 +12,10 @@ func SetupRoutes(app *fiber.App) {
 	// Middleware
 	api := app.Group("/api/v1", logger.New())
 	//File server for generated sets
-	api.Static("/sets", "./public")
+	fileServer := api.Group(`/sets`)
+	fileServer.Static("/uploaded/", "./public")
+
+	fileServer.Static("/merged", "./public/build")
 
 	api.Post("/upload", func(c *fiber.Ctx) error {
 		err := middleware.UploadSets(c)
