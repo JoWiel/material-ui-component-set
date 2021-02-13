@@ -54,7 +54,7 @@ func GenerateCombinedSet(c *fiber.Ctx) error {
 	outputPrefix := `./public/generated/`
 	orgAndAppPath := requestBody.Organisation + `/` + requestBody.App
 	outputDirectory := outputPrefix + orgAndAppPath
-	outputURL := `api/v1/sets/merged/` + orgAndAppPath
+	outputURL := `/api/v1/sets/merged/` + orgAndAppPath
 	buildDirectory := `./public/build/` + orgAndAppPath
 	webpackPaths, packagePaths, srcPaths, indexJSPaths := getPaths(requestBody)
 
