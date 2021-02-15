@@ -12,7 +12,7 @@ func SetGenerator(path string) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	cmdLine := projectRoot + "/generator/generator.sh"
+	cmdLine := projectRoot + "/generator/scripts/generator.sh"
 
 	// line := "cd " + projectRoot + " && pwd"
 	command := exec.Command("/bin/sh", cmdLine, path)
@@ -33,7 +33,7 @@ func BuildSet(source, destination string) error {
 	if err != nil {
 		return err
 	}
-	cmdLine := projectRoot + "/generator/build-set.sh"
+	cmdLine := projectRoot + "/generator/scripts/build-set.sh"
 
 	sourceCommand := source
 	command := exec.Command("/bin/sh", cmdLine, projectRoot, sourceCommand, destination)
@@ -55,7 +55,7 @@ func StaticGenerator(path string) {
 		fmt.Println(err)
 	}
 
-	cmdLine := projectRoot + "/generator/static.sh"
+	cmdLine := projectRoot + "/generator/scripts/static.sh"
 
 	// line := "cd " + projectRoot + " && pwd"
 	command := exec.Command("/bin/sh", cmdLine, path)

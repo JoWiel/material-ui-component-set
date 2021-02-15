@@ -73,13 +73,19 @@ func GenerateCombinedSet(c *fiber.Ctx) error {
 
 	generator.CreateDiretoryIfNotExist(`./public/build/` + requestBody.Organisation)
 	generator.CreateDiretoryIfNotExist(buildDirectory)
-	err = generator.BuildSet(outputDirectory, buildDirectory)
+
+	//Async to reduce timeout on request side
+	go func() {
+		err = generator.BuildSet(outputDirectory, buildDirectory)
+	}()
+
 	if err != nil {
 		return err
 	}
 	c.Status(200).JSON(&fiber.Map{
-		"succes": true,
-		"url":    outputURL,
+		"succes":  true,
+		"message": "Component-set is being build this will take approximately 5 minutes.",
+		"url":     outputURL,
 	})
 	return nil
 }

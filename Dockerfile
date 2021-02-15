@@ -1,4 +1,23 @@
-FROM node:alpine AS node_builder
+FROM alpine/git as intermediate
+
+WORKDIR /public/repositories
+RUN git clone https://github.com/bettyblocks/material-ui-component-set.git
+
+FROM alpine:3.9 AS node_builder
+
+ENV METEOR_VERSION=1.8.1
+ENV METEOR_ALLOW_SUPERUSER true
+ENV NODE_VERSION 8.15
+RUN apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/v3.8/main/ nodejs=8.14.0-r0 npm 
+
+WORKDIR /
+
+COPY generator/scripts* /generator/scripts/
+
+WORKDIR /public
+RUN  mkdir generated && mkdir build && mkdir uploaded
+
+
 FROM golang:alpine AS builder
 
 RUN apk add --no-cache go
@@ -21,10 +40,9 @@ RUN go build -o main .
 
 FROM alpine:latest
 # Copy the code into the container
+COPY --from=intermediate / ./
+COPY --from=node_builder / ./
 COPY --from=builder ./build/main /main
-# COPY --from=super_graph_builder /config ./config
-# COPY --from=node_builder /build ./frontend/whisperspot-web/build
-# Build the application
 
 # Move to /dist directory as the place for resulting binary folder
 WORKDIR /
