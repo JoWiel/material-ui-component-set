@@ -18,10 +18,11 @@ func SetupRoutes(app *fiber.App) {
 	fileServer.Static("/merged", "./public/build")
 
 	api.Post("/upload", func(c *fiber.Ctx) error {
-		err := middleware.UploadSets(c)
-		if err != nil {
-			middleware.SendErrorMessage(c, 500, err)
-		}
+		// err := middleware.UploadSets(c)
+		// if err != nil {
+		// 	middleware.SendErrorMessage(c, 500, err)
+		// }
+		middleware.SendErrorMessage(c, 404, `Disabled`)
 		return nil
 	})
 

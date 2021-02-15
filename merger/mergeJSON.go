@@ -82,6 +82,7 @@ func MergePackageJSONs(packageJSONs []PackageJSON) PackageJSON {
 		devDependecies := MergeMaps(merged.DevDependencies, item.DevDependencies)
 		merged.Dependencies = dependecies
 		merged.DevDependencies = devDependecies
+
 	}
 	return merged
 }
