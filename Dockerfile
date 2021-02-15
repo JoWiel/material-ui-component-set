@@ -12,6 +12,7 @@ RUN apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/v3.8/ma
 
 WORKDIR /
 
+RUN npm install -g @betty-blocks/cli@latest
 COPY generator/scripts* /generator/scripts/
 
 WORKDIR /public
